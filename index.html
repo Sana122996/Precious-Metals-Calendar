@@ -147,15 +147,17 @@
         .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
         .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #f0f0f0; border: 1px solid #f0f0f0; }
         
+        /* --- 日历格子样式修改 --- */
         .day-cell { 
             background: #fff; 
-            min-height: 60px; 
-            height: auto;
+            /* 【核心修改】将最小高度从 60px 提高到 85px，让空格子看起来也是方形的 */
+            min-height: 85px; 
+            height: auto; /* 依然允许内容撑高 */
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             padding-top: 4px; 
-            padding-bottom: 6px;
+            padding-bottom: 8px; /* 底部留白稍微增加 */
             position: relative;
         }
         .day-num { font-size: 14px; margin-bottom: 2px; font-weight: 500; }
@@ -411,7 +413,7 @@
 
     let voteStats = { bull: 1420, bear: 764 };
     let hasVoted = false;
-    let currentVote = null; // 记录当前投票状态
+    let currentVote = null;
 
     // 默认状态：2026年1月
     let state = { y: 2026, m: 0, metal: 'gold' };
@@ -425,9 +427,8 @@
 
     // --- 投票逻辑 (可重选) ---
     window.vote = function(type) {
-        if(type === currentVote) return; // 点击同一个，不做操作
+        if(type === currentVote) return; 
         
-        // 1. 如果之前投过，先撤销旧的
         if(currentVote === 'bull') {
             voteStats.bull--;
             resetBtn('btn-bull', 'trending-up', '看多');
@@ -436,7 +437,6 @@
             resetBtn('btn-bear', 'trending-down', '看空');
         }
 
-        // 2. 投新的
         if(type === 'bull') {
             voteStats.bull++;
             setBtnActive('btn-bull', '已看多');
@@ -445,19 +445,17 @@
             setBtnActive('btn-bear', '已看空');
         }
         
-        currentVote = type; // 更新当前状态
-        hasVoted = true;    // 标记已参与
+        currentVote = type;
+        hasVoted = true;
         updateVoteUI();
     };
 
-    // 辅助：重置按钮样式
     function resetBtn(id, icon, text) {
         const btn = document.getElementById(id);
         btn.classList.remove('active');
         btn.innerHTML = `<ion-icon name="${icon}"></ion-icon> ${text}`;
     }
 
-    // 辅助：设置按钮激活样式
     function setBtnActive(id, text) {
         const btn = document.getElementById(id);
         btn.classList.add('active');
@@ -531,7 +529,7 @@
         let globalDelay = 0; 
 
         for(let i=0; i<firstDay; i++) {
-            daysContainer.innerHTML += `<div class="day-cell" style="background:transparent;"></div>`;
+            daysContainer.innerHTML += `<div class="day-cell" style="background:transparent; min-height:0;"></div>`;
         }
 
         for(let d=1; d<=totalDays; d++) {
@@ -611,7 +609,7 @@
     window.askJump = (price) => {
         const m = metals[state.metal];
         jumpUrl = m.url;
-        document.getElementById('jump-msg').innerHTML = `查看 <b>${m.name}</b> 详细行情`;
+        document.getElementById('jump-msg').innerHTML = `查看 ${m.name} 详细行情`;
         document.getElementById('jump-modal').classList.add('show-modal');
     }
     document.getElementById('btn-do-jump').onclick = () => window.location.href = jumpUrl;
