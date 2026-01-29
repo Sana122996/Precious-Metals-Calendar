@@ -2,7 +2,7 @@
 <html lang="zh-CN">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=390, user-scalable=no, initial-scale=1.0, maximum-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>贵金属历程</title>
     
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -21,10 +21,11 @@
             --blue: #5A82E6; 
             --line: #e5e5ea;
             --radius-btn: 2px;
+            --safe-bottom: env(safe-area-inset-bottom);
         }
 
         body {
-            background-color: #e5e5e5;
+            background-color: var(--bg-body);
             margin: 0;
             padding: 0;
             font-family: "PingFang SC", "PingFang TC", "Helvetica Neue", Helvetica, "Microsoft YaHei", "Noto Sans SC", sans-serif;
@@ -36,14 +37,16 @@
         }
 
         #app-viewport {
-            width: 390px;
+            width: 100%;
+            max-width: 600px;
+            margin: 0 auto;
             background-color: var(--bg-body);
             min-height: 100vh;
             position: relative;
-            box-shadow: 0 0 20px rgba(0,0,0,0.1);
             display: flex;
             flex-direction: column;
             overflow-x: hidden;
+            padding-bottom: calc(60px + var(--safe-bottom));
         }
 
         /* --- 1. 头图 --- */
@@ -64,7 +67,7 @@
             backdrop-filter: blur(10px);
             display: flex;
             align-items: center;
-            padding: 0 10px;
+            padding: 0 16px;
             border-bottom: 1px solid var(--line);
             position: sticky;
             top: 0;
@@ -84,7 +87,7 @@
         .nav-center { flex: 1; text-align: center; font-weight: 600; font-size: 17px; }
 
         /* --- 视图切换 --- */
-        .view-section { display: none; flex-direction: column; flex: 1; padding-bottom: 60px; animation: fadeIn 0.3s; }
+        .view-section { display: none; flex-direction: column; flex: 1; animation: fadeIn 0.3s; }
         .view-section.active { display: flex; }
         @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
 
@@ -98,7 +101,7 @@
         .year-card {
             background: #fff;
             border-radius: 6px; 
-            padding: 15px 5px; 
+            padding: 20px 0; 
             display: flex;
             flex-direction: column;
             align-items: center;
@@ -106,32 +109,16 @@
             box-shadow: 0 2px 8px rgba(0,0,0,0.05);
             cursor: pointer;
             transition: transform 0.1s;
-            min-height: 80px;
         }
         .year-card:active { transform: scale(0.96); background: #f9f9f9; }
-        .year-num { font-size: 20px; font-weight: 600; color: var(--text-main); line-height: 1; margin-bottom: 6px; }
+        .year-num { 
+            font-size: 20px; 
+            font-weight: 600; 
+            color: var(--text-main); 
+            line-height: 1; 
+            margin-bottom: 0; 
+        }
         
-        .year-tags-wrapper {
-            display: flex;
-            flex-direction: column;
-            gap: 4px;
-            align-items: center;
-            width: 100%;
-        }
-        .year-tag {
-            font-size: 9px; 
-            color: #fff;
-            background-color: var(--red); 
-            padding: 2px 5px;
-            border-radius: var(--radius-btn); 
-            text-align: center; 
-            line-height: 1.2; 
-            white-space: nowrap;
-            max-width: 95%;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
         /* --- 月历视图 --- */
         .metal-tabs {
             display: flex; margin: 10px 16px; 
@@ -140,7 +127,8 @@
             padding: 2px;
         }
         .tab-item { 
-            flex: 1; text-align: center; padding: 6px 0; font-size: 12px; color: var(--text-sub); 
+            flex: 1; text-align: center; padding: 8px 0; 
+            font-size: 13px; color: var(--text-sub); 
             border-radius: var(--radius-btn);
             transition: all 0.2s; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
         }
@@ -149,45 +137,36 @@
         .calendar-card {
             background: #fff; margin: 0 16px; 
             border-radius: 6px; 
-            padding: 8px;
+            padding: 10px 8px;
             position: relative; box-shadow: 0 2px 10px rgba(0,0,0,0.05);
             z-index: 10;
         }
-        .month-ctrl { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px 10px; font-weight: 600; font-size: 16px; }
-        .arrow-btn { color: var(--blue); background: none; border: none; font-size: 20px; cursor: pointer; }
+        .month-ctrl { display: flex; justify-content: space-between; align-items: center; padding: 5px 10px 15px; font-weight: 600; font-size: 17px; }
+        .arrow-btn { color: var(--blue); background: none; border: none; font-size: 22px; cursor: pointer; padding: 0 10px; }
 
-        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 11px; color: var(--text-sub); margin-bottom: 4px; }
-        /* 日历网格 */
-        .days-grid { 
-            display: grid; 
-            grid-template-columns: repeat(7, 1fr); 
-            gap: 1px; 
-            background: #f0f0f0; 
-            border: 1px solid #f0f0f0; 
-        }
+        .weekdays { display: grid; grid-template-columns: repeat(7, 1fr); text-align: center; font-size: 12px; color: var(--text-sub); margin-bottom: 6px; }
+        .days-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 1px; background: #f0f0f0; border: 1px solid #f0f0f0; }
         
         .day-cell { 
             background: #fff; 
-            min-height: 55px; /* 最小高度 */
-            height: auto; /* 【核心修改】允许高度自适应增长 */
+            min-height: 60px; 
+            height: auto;
             display: flex; 
             flex-direction: column; 
             align-items: center; 
             padding-top: 4px; 
-            padding-bottom: 6px; /* 增加底部留白，防止标签贴底 */
+            padding-bottom: 6px;
             position: relative;
         }
-        .day-num { font-size: 13px; margin-bottom: 1px; font-weight: 500; }
+        .day-num { font-size: 14px; margin-bottom: 2px; font-weight: 500; }
 
         /* 印章 */
         .stamp {
-            font-size: 9px; padding: 0px 4px; 
+            font-size: 10px; padding: 1px 4px; 
             border-radius: var(--radius-btn);
             background: var(--red); 
-            color: #fff; 
-            /* 【核心修改】字体加粗到 800 */
-            font-weight: 800; 
-            margin-top: 1px; cursor: pointer; 
+            color: #fff; font-weight: 800;
+            margin-top: 2px; cursor: pointer; 
             box-shadow: 1px 1px 2px rgba(0,0,0,0.2);
             line-height: 1.4;
             opacity: 0; transform: scale(0);
@@ -202,18 +181,18 @@
         }
 
         /* --- 评论区 --- */
-        .comment-section { margin-top: 15px; background: #fff; padding: 16px; padding-bottom: 100px; }
+        .comment-section { margin-top: 15px; background: #fff; padding: 20px 16px; padding-bottom: 120px; }
         
         .vote-card {
             background: #f9f9f9;
             border-radius: 4px;
-            padding: 12px;
-            margin-bottom: 20px;
+            padding: 16px;
+            margin-bottom: 24px;
             border: 1px solid var(--line);
         }
-        .vote-header { font-size: 13px; font-weight: 600; margin-bottom: 8px; display: flex; justify-content: space-between; }
+        .vote-header { font-size: 14px; font-weight: 600; margin-bottom: 10px; display: flex; justify-content: space-between; }
         .vote-bar-bg {
-            height: 8px; width: 100%; background: var(--green); 
+            height: 10px; width: 100%; background: var(--green); 
             border-radius: var(--radius-btn);
             overflow: hidden; position: relative; margin-bottom: 12px;
         }
@@ -222,15 +201,15 @@
             transition: width 0.4s ease-out; position: relative;
         }
         .vote-bar-fill::after { content: ''; position: absolute; right: 0; top: 0; bottom: 0; width: 2px; background: #fff; }
-        .vote-nums { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--text-sub); margin-top: -8px; margin-bottom: 10px; }
+        .vote-nums { display: flex; justify-content: space-between; font-size: 12px; font-weight: 700; color: var(--text-sub); margin-top: -8px; margin-bottom: 12px; }
         .red-text { color: var(--red); }
         .green-text { color: var(--green); }
         
-        .vote-btns { display: flex; gap: 10px; }
+        .vote-btns { display: flex; gap: 12px; }
         .v-btn {
-            flex: 1; border: none; padding: 10px; 
+            flex: 1; border: none; padding: 12px; 
             border-radius: var(--radius-btn); 
-            font-size: 14px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px;
+            font-size: 15px; font-weight: 600; cursor: pointer; display: flex; justify-content: center; align-items: center; gap: 6px;
             transition: transform 0.1s;
         }
         .v-btn:active { transform: scale(0.97); }
@@ -240,51 +219,51 @@
         .btn-bear.active { background: var(--green); color: #fff; }
 
         .comment-list { list-style: none; padding: 0; margin: 0; }
-        .comment-item { padding: 12px 0; border-bottom: 1px solid var(--line); display: flex; gap: 10px; }
-        .avatar { width: 32px; height: 32px; background: #ddd; border-radius: 50%; flex-shrink: 0; }
+        .comment-item { padding: 16px 0; border-bottom: 1px solid var(--line); display: flex; gap: 12px; }
+        .avatar { width: 36px; height: 36px; background: #ddd; border-radius: 50%; flex-shrink: 0; }
         .comm-info { display: flex; flex-direction: column; flex: 1; }
-        .comm-user { font-size: 13px; font-weight: 600; color: #333; margin-bottom: 2px; }
-        .comm-text { font-size: 14px; color: var(--text-main); margin-bottom: 4px; line-height: 1.4; }
-        .comm-meta { font-size: 11px; color: #999; display: flex; gap: 8px; }
+        .comm-user { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px; }
+        .comm-text { font-size: 15px; color: var(--text-main); margin-bottom: 6px; line-height: 1.5; }
+        .comm-meta { font-size: 12px; color: #999; display: flex; gap: 10px; }
 
         .write-comment-box {
-            display: flex; gap: 10px; margin-bottom: 20px;
+            display: flex; gap: 10px; margin-bottom: 24px;
             background: #f9f9f9; 
-            padding: 10px; 
+            padding: 12px; 
             border-radius: 4px; 
         }
         .input-field {
             flex: 1; border: 1px solid var(--line); 
             border-radius: var(--radius-btn);
-            padding: 8px; font-size: 14px;
-            font-family: inherit; resize: none; height: 36px;
+            padding: 10px; font-size: 15px;
+            font-family: inherit; resize: none; height: 40px;
         }
         .send-btn {
             background: var(--blue);
             color: #fff; border: none; 
             border-radius: var(--radius-btn);
-            padding: 0 15px;
+            padding: 0 20px;
             font-weight: 600; cursor: pointer;
         }
 
         .footer-action {
             position: fixed; bottom: 0; left: 0; right: 0;
-            background: rgba(255,255,255,0.95);
+            background: rgba(255,255,255,0.98);
             border-top: 1px solid var(--line);
-            padding: 10px 20px;
-            padding-bottom: max(10px, env(safe-area-inset-bottom));
+            padding: 12px 20px;
+            padding-bottom: calc(12px + var(--safe-bottom));
             display: none; justify-content: center;
             z-index: 200;
         }
         .footer-action.show { display: flex; }
         
         .share-btn-large {
-            width: 100%; max-width: 350px;
+            width: 100%; max-width: 600px;
             background-color: var(--blue);
             color: #fff;
             border: none; 
             border-radius: var(--radius-btn);
-            padding: 12px; font-size: 16px; font-weight: 600;
+            padding: 14px; font-size: 17px; font-weight: 600;
             display: flex; align-items: center; justify-content: center; gap: 8px;
             cursor: pointer;
         }
@@ -292,9 +271,9 @@
 
         /* 弹窗 */
         .modal-mask { position: fixed; top:0; left:0; right:0; bottom:0; background: rgba(0,0,0,0.3); z-index: 999; display: none; justify-content: center; align-items: center; }
-        .modal-body { width: 260px; background: #fff; border-radius: 6px; text-align: center; overflow: hidden; }
-        .modal-content { padding: 20px; border-bottom: 1px solid #eee; }
-        .modal-btn { width: 100%; padding: 12px; border: none; background: #fff; color: var(--blue); font-size: 16px; cursor: pointer; }
+        .modal-body { width: 80%; max-width: 300px; background: #fff; border-radius: 6px; text-align: center; overflow: hidden; }
+        .modal-content { padding: 24px; border-bottom: 1px solid #eee; font-size: 16px; }
+        .modal-btn { width: 100%; padding: 14px; border: none; background: #fff; color: var(--blue); font-size: 17px; cursor: pointer; font-weight: 500; }
         .show-modal { display: flex; }
     </style>
 </head>
@@ -432,6 +411,7 @@
 
     let voteStats = { bull: 1420, bear: 764 };
     let hasVoted = false;
+    let currentVote = null; // 记录当前投票状态
 
     // 默认状态：2026年1月
     let state = { y: 2026, m: 0, metal: 'gold' };
@@ -440,34 +420,49 @@
         renderYearGrid();
         renderComments();
         updateVoteUI(); 
-        // 核心：直接渲染月历
         renderCalendar();
     }
 
-    // --- 投票逻辑 ---
+    // --- 投票逻辑 (可重选) ---
     window.vote = function(type) {
-        if(hasVoted) return; 
+        if(type === currentVote) return; // 点击同一个，不做操作
         
+        // 1. 如果之前投过，先撤销旧的
+        if(currentVote === 'bull') {
+            voteStats.bull--;
+            resetBtn('btn-bull', 'trending-up', '看多');
+        } else if(currentVote === 'bear') {
+            voteStats.bear--;
+            resetBtn('btn-bear', 'trending-down', '看空');
+        }
+
+        // 2. 投新的
         if(type === 'bull') {
             voteStats.bull++;
-            // 按钮变色 + 修改文字
-            const btn = document.getElementById('btn-bull');
-            btn.classList.add('active');
-            btn.innerHTML = '<ion-icon name="checkmark-circle"></ion-icon> 已看多';
+            setBtnActive('btn-bull', '已看多');
         } else {
             voteStats.bear++;
-            const btn = document.getElementById('btn-bear');
-            btn.classList.add('active');
-            btn.innerHTML = '<ion-icon name="checkmark-circle"></ion-icon> 已看空';
+            setBtnActive('btn-bear', '已看空');
         }
         
-        hasVoted = true;
-        // 禁用点击
-        document.getElementById('btn-bull').style.pointerEvents = 'none';
-        document.getElementById('btn-bear').style.pointerEvents = 'none';
-        
+        currentVote = type; // 更新当前状态
+        hasVoted = true;    // 标记已参与
         updateVoteUI();
     };
+
+    // 辅助：重置按钮样式
+    function resetBtn(id, icon, text) {
+        const btn = document.getElementById(id);
+        btn.classList.remove('active');
+        btn.innerHTML = `<ion-icon name="${icon}"></ion-icon> ${text}`;
+    }
+
+    // 辅助：设置按钮激活样式
+    function setBtnActive(id, text) {
+        const btn = document.getElementById(id);
+        btn.classList.add('active');
+        btn.innerHTML = `<ion-icon name="checkmark-circle"></ion-icon> ${text}`;
+    }
 
     function updateVoteUI() {
         const total = voteStats.bull + voteStats.bear;
@@ -506,7 +501,7 @@
         renderCalendar();
     };
 
-    // --- 年份网格渲染 (修复多标签显示) ---
+    // --- 年份网格渲染 (只显示数字) ---
     function renderYearGrid() {
         const container = document.getElementById('year-grid');
         container.innerHTML = '';
@@ -515,37 +510,7 @@
         years.forEach(year => {
             const card = document.createElement('div');
             card.className = 'year-card';
-            
-            // 收集多个标签
-            let tagsArr = [];
-            
-            if(db[year]) {
-                ['gold','silver'].forEach(m => {
-                    if(db[year][m]) {
-                        db[year][m].forEach(item => {
-                            const step = metals[m].step;
-                            if(item.p % step === 0) {
-                                const metalName = m === 'gold' ? '现货黄金' : '现货白银';
-                                tagsArr.push(`${metalName}破${item.p}`);
-                            }
-                        });
-                    }
-                });
-            }
-
-            // 生成标签 HTML
-            let tagsHTML = '';
-            if(tagsArr.length > 0) {
-                tagsArr = [...new Set(tagsArr)]; // 去重
-                tagsHTML = `<div class="year-tags-wrapper">` + 
-                           tagsArr.map(t => `<div class="year-tag">${t}</div>`).join('') + 
-                           `</div>`;
-            }
-
-            card.innerHTML = `
-                <div class="year-num">${year}</div>
-                ${tagsHTML}
-            `;
+            card.innerHTML = `<div class="year-num">${year}</div>`;
             card.onclick = () => goToMonthView(year);
             container.appendChild(card);
         });
@@ -646,7 +611,7 @@
     window.askJump = (price) => {
         const m = metals[state.metal];
         jumpUrl = m.url;
-        document.getElementById('jump-msg').innerHTML = `查看 ${m.name} 详细行情`;
+        document.getElementById('jump-msg').innerHTML = `查看 <b>${m.name}</b> 详细行情`;
         document.getElementById('jump-modal').classList.add('show-modal');
     }
     document.getElementById('btn-do-jump').onclick = () => window.location.href = jumpUrl;
