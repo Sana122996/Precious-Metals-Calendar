@@ -221,14 +221,29 @@
         .btn-bull.active { background: var(--red); color: #fff; }
         .btn-bear.active { background: var(--green); color: #fff; }
 
+        /* 评论列表 */
         .comment-list { list-style: none; padding: 0; margin: 0; }
-        .comment-item { padding: 16px 0; border-bottom: 1px solid var(--line); display: flex; gap: 12px; }
+        
+        .comment-item { 
+            padding: 16px 0; 
+            border-bottom: 1px solid var(--line); 
+            display: flex; 
+            flex-direction: column; /* 改为纵向布局以容纳子评论 */
+            gap: 8px;
+        }
+        /* 主评论内容区域 */
+        .main-comment-content {
+            display: flex;
+            gap: 12px;
+        }
+
         .avatar { width: 36px; height: 36px; background: #ddd; border-radius: 50%; flex-shrink: 0; }
         .comm-info { display: flex; flex-direction: column; flex: 1; }
         .comm-user { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 4px; }
         .comm-text { font-size: 15px; color: var(--text-main); margin-bottom: 8px; line-height: 1.5; }
         .comm-meta { font-size: 12px; color: #999; display: flex; gap: 10px; align-items: center; }
 
+        /* 操作栏 */
         .comm-actions { display: flex; gap: 20px; margin-top: 4px; }
         .action-btn {
             background: none; border: none; padding: 0;
@@ -239,6 +254,29 @@
         .action-btn ion-icon { font-size: 16px; }
         .action-btn.liked { color: var(--red); }
         .action-btn:active { opacity: 0.7; }
+
+        /* 【新增】子评论（回复）样式 */
+        .reply-container {
+            margin-left: 48px; /* 与头像对齐的缩进 */
+            background-color: #f9f9f9;
+            border-radius: 4px;
+            padding: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+        }
+        .reply-item {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+        .reply-user {
+            font-weight: 600;
+            color: #333;
+            margin-right: 4px;
+        }
+        .reply-text {
+            color: #555;
+        }
 
         .write-comment-box {
             display: flex; gap: 10px; margin-bottom: 24px;
@@ -411,16 +449,33 @@
         palladium: { name:'现货钯金', url:'https://www.tradinghero.com/chart?symbol=XPDUSD.GOODS', step: 1000 }
     };
 
+    // 评论数据，增加 replies 数组存放回复
     let comments = [
-        { id: 1, user: "User887", text: "2026年黄金太疯狂了！", time: "10分钟前", ip: "IP: 广东", likes: 23, liked: false },
-        { id: 2, user: "Trader_Tom", text: "5000大关终于破了，空头瑟瑟发抖", time: "45分钟前", ip: "IP: 上海", likes: 8, liked: false },
-        { id: 3, user: "白银队长", text: "白银才是今年的黑马，冲啊！", time: "1小时前", ip: "IP: 北京", likes: 45, liked: false },
-        { id: 4, user: "韭菜一号", text: "还好我昨天加仓了", time: "昨天 14:30", ip: "IP: 浙江", likes: 2, liked: false }
+        { 
+            id: 1, user: "User887", text: "2026年黄金太疯狂了！", time: "10分钟前", ip: "IP: 广东", likes: 23, liked: false,
+            replies: [
+                { user: "路人甲", text: "确实，完全没想到能破5000" },
+                { user: "User887", text: "我早就说了要涨" }
+            ]
+        },
+        { 
+            id: 2, user: "Trader_Tom", text: "5000大关终于破了，空头瑟瑟发抖", time: "45分钟前", ip: "IP: 上海", likes: 8, liked: false,
+            replies: []
+        },
+        { 
+            id: 3, user: "白银队长", text: "白银才是今年的黑马，冲啊！", time: "1小时前", ip: "IP: 北京", likes: 45, liked: false,
+            replies: []
+        },
+        { 
+            id: 4, user: "韭菜一号", text: "还好我昨天加仓了", time: "昨天 14:30", ip: "IP: 浙江", likes: 2, liked: false,
+            replies: []
+        }
     ];
 
     let voteStats = { bull: 1420, bear: 764 };
     let hasVoted = false;
     let currentVote = null;
+    let replyingToId = null; // 记录当前正在回复哪条评论的ID
 
     let state = { y: 2026, m: 0, metal: 'gold' };
 
@@ -431,7 +486,6 @@
         renderCalendar();
     }
 
-    // --- 投票逻辑 ---
     window.vote = function(type) {
         if(type === currentVote) return; 
         
@@ -478,7 +532,6 @@
         document.getElementById('vote-fill').style.width = bullPct + "%";
     }
 
-    // --- 视图切换 ---
     window.showYearView = function() {
         document.getElementById('view-month').classList.remove('active');
         document.getElementById('view-year').classList.add('active');
@@ -498,7 +551,6 @@
         renderCalendar();
     };
 
-    // --- 年份网格 ---
     function renderYearGrid() {
         const container = document.getElementById('year-grid');
         container.innerHTML = '';
@@ -513,7 +565,6 @@
         });
     }
 
-    // --- 月历渲染 ---
     function renderCalendar() {
         const daysContainer = document.getElementById('days-container');
         document.getElementById('month-label').innerText = `${state.m + 1}月`;
@@ -576,7 +627,7 @@
         renderCalendar();
     }
 
-    // --- 评论 ---
+    // --- 评论渲染 ---
     function renderComments() {
         const list = document.getElementById('comment-list');
         list.innerHTML = '';
@@ -587,28 +638,41 @@
             const likeClass = c.liked ? 'action-btn liked' : 'action-btn';
             const likeIcon = c.liked ? 'heart' : 'heart-outline';
 
+            // 构建回复HTML
+            let repliesHtml = '';
+            if(c.replies && c.replies.length > 0) {
+                repliesHtml = `<div class="reply-container">`;
+                c.replies.forEach(r => {
+                    repliesHtml += `<div class="reply-item"><span class="reply-user">${r.user}:</span><span class="reply-text">${r.text}</span></div>`;
+                });
+                repliesHtml += `</div>`;
+            }
+
             li.innerHTML = `
-                <div class="avatar"></div>
-                <div class="comm-info">
-                    <div class="comm-user">${c.user}</div>
-                    <div class="comm-text">${c.text}</div>
-                    <div class="comm-meta">
-                        <span>${c.time}</span>
-                        <span>·</span>
-                        <span>${c.ip}</span>
-                    </div>
-                    <div class="comm-actions">
-                        <button class="${likeClass}" onclick="toggleLike(${c.id})">
-                            <ion-icon name="${likeIcon}"></ion-icon> ${c.likes}
-                        </button>
-                        <button class="action-btn" onclick="replyComment('${c.user}')">
-                            <ion-icon name="chatbubble-outline"></ion-icon> 回复
-                        </button>
-                        <button class="action-btn" onclick="reportComment(${c.id})">
-                            <ion-icon name="alert-circle-outline"></ion-icon> 举报
-                        </button>
+                <div class="main-comment-content">
+                    <div class="avatar"></div>
+                    <div class="comm-info">
+                        <div class="comm-user">${c.user}</div>
+                        <div class="comm-text">${c.text}</div>
+                        <div class="comm-meta">
+                            <span>${c.time}</span>
+                            <span>·</span>
+                            <span>${c.ip}</span>
+                        </div>
+                        <div class="comm-actions">
+                            <button class="${likeClass}" onclick="toggleLike(${c.id})">
+                                <ion-icon name="${likeIcon}"></ion-icon> ${c.likes}
+                            </button>
+                            <button class="action-btn" onclick="prepareReply(${c.id}, '${c.user}')">
+                                <ion-icon name="chatbubble-outline"></ion-icon> 回复
+                            </button>
+                            <button class="action-btn" onclick="reportComment(${c.id})">
+                                <ion-icon name="alert-circle-outline"></ion-icon> 举报
+                            </button>
+                        </div>
                     </div>
                 </div>
+                ${repliesHtml}
             `;
             list.appendChild(li); 
         });
@@ -623,15 +687,16 @@
         }
     }
 
-    window.replyComment = function(user) {
+    // 准备回复：记录ID，聚焦输入框
+    window.prepareReply = function(id, user) {
+        replyingToId = id;
         const input = document.getElementById('comment-input');
-        input.value = `回复 @${user}：`;
+        input.placeholder = `回复 @${user}：`;
         input.focus();
     }
 
-    // 【核心修改】举报跳转功能
     window.reportComment = function(id) {
-        // 直接跳转到举报链接
+        // 直接跳转
         window.location.href = 'https://www.jin10.com/app_pages/user_report/index.html#/';
     }
 
@@ -640,19 +705,40 @@
         const text = input.value.trim();
         if(!text) return;
 
-        const newComment = { 
-            id: Date.now(),
-            user: "我", 
-            text: text, 
-            time: "刚刚", 
-            ip: "IP: 新加坡",
-            likes: 0,
-            liked: false
-        };
-        comments.unshift(newComment); 
+        // 判断是回复还是新评论
+        if(replyingToId) {
+            // 是回复
+            const parentComment = comments.find(c => c.id === replyingToId);
+            if(parentComment) {
+                parentComment.replies.push({
+                    user: "我",
+                    text: text
+                });
+            }
+            // 重置状态
+            replyingToId = null;
+            input.placeholder = "发表你的看法...";
+        } else {
+            // 是新评论
+            const newComment = { 
+                id: Date.now(),
+                user: "我", 
+                text: text, 
+                time: "刚刚", 
+                ip: "IP: 新加坡",
+                likes: 0,
+                liked: false,
+                replies: []
+            };
+            comments.unshift(newComment); 
+        }
+
         renderComments(); 
         input.value = '';
-        document.getElementById('comment-list').scrollIntoView({behavior:'smooth'});
+        
+        // 如果是新评论，滚动到顶部；如果是回复，保持在当前位置体验更好（或者简单点都滚动）
+        // 这里为了简单直接滚动到列表顶部
+        // document.getElementById('comment-list').scrollIntoView({behavior:'smooth'});
     }
 
     let jumpUrl = '';
